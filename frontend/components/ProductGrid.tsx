@@ -12,9 +12,18 @@ export default function ProductGrid() {
   const color = searchParams.get("color");
   const priceRange = searchParams.get("price-range");
   const sort = searchParams.get("sort") || "featured";
+  const query = searchParams.get("q");
 
   // Filtering Logic
   let filteredProducts = [...MOCK_PRODUCTS];
+
+  if (query) {
+    const qLower = query.toLowerCase();
+    filteredProducts = filteredProducts.filter(p => 
+      p.name.toLowerCase().includes(qLower) || 
+      p.description.toLowerCase().includes(qLower)
+    );
+  }
 
   if (category && category !== "all") {
     filteredProducts = filteredProducts.filter(p => p.category === category);

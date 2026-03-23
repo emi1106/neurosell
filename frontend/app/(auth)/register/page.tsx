@@ -1,5 +1,6 @@
 import AuthHero from '@/components/auth/AuthHero';
 import RegisterForm from '@/components/auth/RegisterForm';
+import Link from 'next/link';
 
 export default function RegisterPage() {
   return (
@@ -16,7 +17,9 @@ export default function RegisterPage() {
         {/* Quote in top-left corner */}
         <div className="absolute top-8 left-8 text-left hidden lg:block">
           <p className="text-lg font-medium text-gray-700 italic">Buy and sell your clothes with style</p>
-          <h2 className="text-4xl font-black text-gray-900 mt-1">THREADS</h2>
+          <Link href="/">
+            <h2 className="text-4xl font-black text-gray-900 mt-1 cursor-pointer hover:opacity-70 transition-opacity">THREADS</h2>
+          </Link>
         </div>
 
         <RegisterForm />
