@@ -47,10 +47,53 @@ export default function UploadPage() {
     }, 1500);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', { title, description, category, price, brand, condition, material, color, size, image: selectedImage });
-    alert('Item uploaded successfully!');
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('http://localhost:5000/create-listing', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title,
+          description,
+          category,
+          price: parseFloat(price),
+          brand,
+          condition,
+          material,
+          color,
+          size,
+          image: selectedImage
+        }),
+      });
+
+      if (response.ok) {
+        alert('Item uploaded successfully!');
+        // Optional: clear form
+        setTitle('');
+        setDescription('');
+        setCategory('');
+        setPrice('');
+        setBrand('');
+        setCondition('');
+        setMaterial('');
+        setColor('');
+        setSize('');
+        setSelectedImage(null);
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        alert(`Failed to upload item: ${errorData.message || response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('An error occurred. Make sure the backend is running on port 5000.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const categories = ['T-Shirts', 'Shirts', 'Jackets', 'Pants', 'Dresses', 'Skirts', 'Shoes', 'Accessories', 'Bags', 'Hats', 'Jewellery', 'Other'];
