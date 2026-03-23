@@ -1,30 +1,6 @@
 import Image from 'next/image';
 import { use } from 'react';
-
-// Mock product data - in a real app, this would come from an API
-const getProductData = (id: string) => {
-  return {
-    id,
-    title: "Vintage Levi's Denim Jacket",
-    price: 79.99,
-    description: "Authentic vintage Levi's denim jacket from the 90s. Perfect condition with minimal wear. Classic straight fit with button closure. Made in USA. A timeless piece that never goes out of style.",
-    category: "Jackets",
-    brand: "Levi's",
-    size: "M",
-    condition: "Excellent",
-    color: "Indigo Blue",
-    material: "100% Cotton",
-    images: [
-      "https://images.unsplash.com/photo-1551028719-00167b16eac5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
-    ],
-    seller: {
-      name: "FashionVintage",
-      rating: 4.8,
-      reviews: 127
-    }
-  };
-};
+import { MOCK_PRODUCTS } from '@/lib/mock-data';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -32,14 +8,31 @@ interface PageProps {
 
 export default function ProductPage({ params }: PageProps) {
   const { id } = use(params);
-  const product = getProductData(id);
+  
+  // Find product by id in mock data
+  const originalProduct = MOCK_PRODUCTS.find((p) => p.id === id);
+  if(!originalProduct) {
+    return <div className="flex items-center justify-center h-screen font-bold text-lg">Product not found</div>
+  }
+
+  // Map MOCK_PRODUCTS format to our detailed format
+  const product = {
+    ...originalProduct,
+    images: [originalProduct.image], // Convert single image to array for UI
+    material: "Premium Material", // Default material since it's not in mock data
+    seller: {
+      name: "THREADS Official",
+      rating: 4.9,
+      reviews: 432
+    }
+  };
 
   const details = [
     { label: 'Category', value: product.category },
-    { label: 'Brand', value: product.brand },
-    { label: 'Size', value: product.size },
-    { label: 'Condition', value: product.condition },
-    { label: 'Color', value: product.color },
+    { label: 'Brand', value: product.brand || 'THREADS' },
+    { label: 'Size', value: product.size || 'N/A' },
+    { label: 'Condition', value: product.condition || 'N/A' },
+    { label: 'Color', value: product.color || 'N/A' },
     { label: 'Material', value: product.material },
   ];
 
@@ -54,7 +47,7 @@ export default function ProductPage({ params }: PageProps) {
               {product.images[0] ? (
                 <Image
                   src={product.images[0]}
-                  alt={product.title}
+                  alt={product.name}
                   width={800}
                   height={1000}
                   className="w-full h-full object-cover"
@@ -73,7 +66,7 @@ export default function ProductPage({ params }: PageProps) {
                 <div key={index} className="aspect-square bg-zinc-50 overflow-hidden cursor-pointer hover:opacity-80 transition-opacity">
                   <Image
                     src={image}
-                    alt={`${product.title} ${index + 1}`}
+                    alt={`${product.name} ${index + 1}`}
                     width={200}
                     height={200}
                     className="w-full h-full object-cover"
@@ -94,7 +87,7 @@ export default function ProductPage({ params }: PageProps) {
             {/* Title and Price */}
             <div className="space-y-3">
               <h1 className="text-4xl md:text-5xl font-medium tracking-tighter text-zinc-900 leading-[0.9]">
-                {product.title}
+                {product.name}
               </h1>
               <p className="text-2xl font-medium tracking-tight text-zinc-900">
                 €{product.price.toFixed(2)}
@@ -123,7 +116,7 @@ export default function ProductPage({ params }: PageProps) {
                 {details.map(({ label, value }) => (
                   <div key={label}>
                     <dt className="text-[10px] font-bold tracking-[0.15em] uppercase text-zinc-400">{label}</dt>
-                    <dd className="mt-0.5 text-sm font-medium text-zinc-900">{value}</dd>
+                    <dd className="mt-0.5 text-sm font-medium text-zinc-900 capitalize">{value}</dd>
                   </div>
                 ))}
               </dl>
