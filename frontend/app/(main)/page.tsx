@@ -4,10 +4,23 @@ import FilterBar from "@/components/FilterBar";
 import ProductGrid from "@/components/ProductGrid";
 import AppPagination from "@/components/Pagination";
 
+import Image from "next/image";
+
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen bg-white font-sans dark:bg-black">
-      <main className="flex-1 max-w-[1440px] mx-auto px-6 md:px-12 pt-16">
+    <div className="flex flex-col min-h-screen bg-white font-sans dark:bg-black relative">
+      {/* Background Image Texture */}
+      <div className="fixed inset-0 z-0 pointer-events-none opacity-40 mix-blend-multiply dark:opacity-10 dark:mix-blend-overlay" aria-hidden="true">
+        <Image
+          src="/main.png"
+          alt="Background Texture"
+          fill
+          className="object-cover"
+          priority
+        />
+      </div>
+      
+      <main className="flex-1 max-w-[1440px] mx-auto px-6 md:px-12 pt-16 relative z-10">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 space-y-8 md:space-y-0 text-left mt-4">
           <div className="max-w-xl">

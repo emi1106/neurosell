@@ -34,44 +34,48 @@ export default function ProductPage({ params }: PageProps) {
   const { id } = use(params);
   const product = getProductData(id);
 
-  return (
-    <div className="min-h-screen bg-green-50">
-      {/* Header */}
-      
+  const details = [
+    { label: 'Category', value: product.category },
+    { label: 'Brand', value: product.brand },
+    { label: 'Size', value: product.size },
+    { label: 'Condition', value: product.condition },
+    { label: 'Color', value: product.color },
+    { label: 'Material', value: product.material },
+  ];
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+  return (
+    <div className="min-h-screen bg-white dark:bg-black">
+      <div className="max-w-[1440px] mx-auto px-6 md:px-12 pt-16 pb-24">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
 
           {/* Product Images */}
-          <div className="space-y-4">
-            <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+          <div className="space-y-3">
+            <div className="aspect-[3/4] bg-zinc-50 overflow-hidden">
               {product.images[0] ? (
                 <Image
                   src={product.images[0]}
                   alt={product.title}
-                  width={600}
-                  height={600}
+                  width={800}
+                  height={1000}
                   className="w-full h-full object-cover"
+                  priority
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-gray-400">
-                  <div className="text-center">
-                    <div className="text-6xl mb-4">📸</div>
-                    <p>Product Image</p>
-                  </div>
+                <div className="w-full h-full flex items-center justify-center text-zinc-300">
+                  <p className="text-xs tracking-widest uppercase">No image</p>
                 </div>
               )}
             </div>
 
-            {/* Thumbnail images */}
-            <div className="grid grid-cols-4 gap-2">
+            {/* Thumbnails */}
+            <div className="grid grid-cols-4 gap-3">
               {product.images.map((image, index) => (
-                <div key={index} className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                <div key={index} className="aspect-square bg-zinc-50 overflow-hidden cursor-pointer hover:opacity-80 transition-opacity">
                   <Image
                     src={image}
                     alt={`${product.title} ${index + 1}`}
-                    width={150}
-                    height={150}
+                    width={200}
+                    height={200}
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -80,57 +84,57 @@ export default function ProductPage({ params }: PageProps) {
           </div>
 
           {/* Product Information */}
-          <div className="space-y-6">
+          <div className="flex flex-col space-y-8 lg:pt-4">
+
+            {/* Category badge */}
+            <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-zinc-400">
+              {product.category}
+            </p>
 
             {/* Title and Price */}
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.title}</h1>
-              <div className="flex items-center space-x-4">
-                <span className="text-3xl font-bold text-green-800">€{product.price}</span>
-              </div>
+            <div className="space-y-3">
+              <h1 className="text-4xl md:text-5xl font-medium tracking-tighter text-zinc-900 leading-[0.9]">
+                {product.title}
+              </h1>
+              <p className="text-2xl font-medium tracking-tight text-zinc-900">
+                €{product.price.toFixed(2)}
+              </p>
             </div>
 
-            {/* Key Details */}
-            <div className="grid grid-cols-2 gap-4 p-4 bg-white rounded-lg border">
-              <div>
-                <span className="text-sm font-medium text-gray-500">Category</span>
-                <p className="text-lg font-semibold text-gray-900">{product.category}</p>
-              </div>
-              <div>
-                <span className="text-sm font-medium text-gray-500">Brand</span>
-                <p className="text-lg font-semibold text-gray-900">{product.brand}</p>
-              </div>
-              <div>
-                <span className="text-sm font-medium text-gray-500">Size</span>
-                <p className="text-lg font-semibold text-gray-900">{product.size}</p>
-              </div>
-              <div>
-                <span className="text-sm font-medium text-gray-500">Condition</span>
-                <p className="text-lg font-semibold text-gray-900">{product.condition}</p>
-              </div>
-              <div>
-                <span className="text-sm font-medium text-gray-500">Color</span>
-                <p className="text-lg font-semibold text-gray-900">{product.color}</p>
-              </div>
-              <div>
-                <span className="text-sm font-medium text-gray-500">Material</span>
-                <p className="text-lg font-semibold text-gray-900">{product.material}</p>
-              </div>
+            {/* Seller */}
+            <div className="flex items-center gap-2 text-xs text-zinc-500">
+              <span className="font-medium text-zinc-700">{product.seller.name}</span>
+              <span className="text-zinc-300">·</span>
+              <span>{product.seller.rating} ★</span>
+              <span className="text-zinc-300">·</span>
+              <span>{product.seller.reviews} reviews</span>
             </div>
 
             {/* Description */}
-            <div className="bg-white p-6 rounded-lg border">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Description</h3>
-              <p className="text-gray-700 leading-relaxed">{product.description}</p>
+            <div className="border-t border-zinc-100 pt-6">
+              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-zinc-400 mb-3">Description</p>
+              <p className="text-sm text-zinc-600 leading-relaxed font-light">{product.description}</p>
             </div>
 
+            {/* Details grid */}
+            <div className="border-t border-zinc-100 pt-6">
+              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-zinc-400 mb-4">Details</p>
+              <dl className="grid grid-cols-2 gap-x-8 gap-y-4">
+                {details.map(({ label, value }) => (
+                  <div key={label}>
+                    <dt className="text-[10px] font-bold tracking-[0.15em] uppercase text-zinc-400">{label}</dt>
+                    <dd className="mt-0.5 text-sm font-medium text-zinc-900">{value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
 
             {/* Action Buttons */}
-            <div className="space-y-3">
-              <button className="w-full bg-green-800 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors">
+            <div className="border-t border-zinc-100 pt-6 space-y-3">
+              <button className="w-full h-12 bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold tracking-[0.2em] uppercase transition-all hover:scale-[1.01] active:scale-[0.99]">
                 Add to Cart
               </button>
-              <button className="w-full border border-green-800 text-green-800 py-3 px-6 rounded-lg font-semibold hover:bg-green-50 transition-colors">
+              <button className="w-full h-12 border border-zinc-200 hover:border-zinc-900 text-zinc-700 hover:text-zinc-900 text-xs font-bold tracking-[0.2em] uppercase transition-all">
                 Contact Seller
               </button>
             </div>

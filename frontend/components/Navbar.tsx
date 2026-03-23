@@ -33,7 +33,8 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="w-full border-b bg-white dark:bg-black px-6 py-4 flex items-center justify-between">
+    <nav className="w-full border-b bg-white dark:bg-black px-6 py-4 flex items-center justify-between relative z-50 backdrop-blur-none">
+
       {/* Left - Logo */}
       <div className="flex-1">
         <Link href="/" className="text-xl font-bold tracking-tight text-foreground uppercase">
