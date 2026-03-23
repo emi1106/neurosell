@@ -214,4 +214,3 @@ backend/cnn/artifacts/search_previews
 dataset/
 backend/cnn/dataset
 *.csv
-*.keras
