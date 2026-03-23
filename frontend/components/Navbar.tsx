@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, ShoppingBag, User } from "lucide-react";
+import { HeartIcon, Search, ShoppingBag, User } from "lucide-react";
 import { Input } from "./ui/input";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -74,13 +74,17 @@ export default function Navbar() {
           />
         </form>
         
-        <button className="cursor-pointer text-zinc-800 dark:text-zinc-200 hover:text-black dark:hover:text-white transition-all duration-200 hover:scale-110 active:scale-95">
+        <Link href="/cart" className="cursor-pointer text-zinc-800 dark:text-zinc-200 hover:text-black dark:hover:text-white transition-all duration-200 hover:scale-110 active:scale-95">
           <ShoppingBag className="h-5 w-5" />
-        </button>
+        </Link>
+
+        <Link href="/favourites" className="cursor-pointer text-zinc-800 dark:text-zinc-200 hover:text-black dark:hover:text-white transition-all duration-200 hover:scale-110 active:scale-95">
+          <HeartIcon className="h-5 w-5" />
+        </Link>
         
-        <button className="cursor-pointer text-zinc-800 dark:text-zinc-200 hover:text-black dark:hover:text-white transition-all duration-200 hover:scale-110 active:scale-95">
+        <Link href="/profile" className="cursor-pointer text-zinc-800 dark:text-zinc-200 hover:text-black dark:hover:text-white transition-all duration-200 hover:scale-110 active:scale-95">
           <User className="h-5 w-5" />
-        </button>
+        </Link>
       </div>
     </nav>
   );
