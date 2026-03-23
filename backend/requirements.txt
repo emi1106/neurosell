@@ -4,3 +4,4 @@ pandas
 torch
 flask
 flask_cors
+openai

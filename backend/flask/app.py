@@ -15,6 +15,7 @@ from cnn.image_to_csv import image_to_fashion_mnist_row
 from cnn.test import evaluate_or_predict, label_to_name
 from database import init_db
 from models import Listing
+from ProductDescriptionLLM import generate_description
 
 app = Flask(__name__)
 CORS(app)
@@ -253,6 +254,48 @@ def get_label_info():
         "labels": label_mapping,
         "total_categories": len(label_mapping)
     })
+
+@app.route("/generate-description", methods=["POST", "OPTIONS"])
+def generate_item_description():
+    """Generate product description using LLM."""
+    # Handle CORS preflight request
+    if request.method == "OPTIONS":
+        return "", 204
+    
+    try:
+        data = request.get_json()
+        
+        # Extract only the required fields
+        condition = data.get("condition", "")
+        size = data.get("size", "")
+        category = data.get("category", "")
+        brand = data.get("brand", "")
+        
+        print(f"DEBUG: Generating description with - condition: {condition}, size: {size}, category: {category}, brand: {brand}")
+        
+        # Call the LLM to generate description
+        description = generate_description(
+            condition=condition,
+            size=size,
+            category=category,
+            brand=brand
+        )
+        
+        print(f"DEBUG: Description generated: {description}")
+        
+        return jsonify({
+            "success": True,
+            "description": description
+        })
+    
+    except Exception as e:
+        import traceback
+        error_msg = str(e)
+        traceback.print_exc()
+        print(f"ERROR: {error_msg}")
+        return jsonify({
+            "error": f"Failed to generate description: {error_msg}"
+        }), 500
 
 if __name__ == "__main__":
     app.run(debug=True)

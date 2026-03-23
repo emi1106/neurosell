@@ -21,6 +21,7 @@ export default function UploadPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [categoryLoading, setCategoryLoading] = useState(false);
   const [predictedLabel, setPredictedLabel] = useState<number | null>(null);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   // Map Fashion MNIST labels to frontend categories - defined early so it can be used in predictCategoryFromImage
   const labelToCategoryMap: { [key: number]: string } = {
@@ -81,24 +82,71 @@ export default function UploadPage() {
     }
   };
 
-  const generateDescription = () => {
+  const generateDescription = async () => {
     setIsLoading(true);
-    setTimeout(() => {
-      setDescription('This is an AI-generated description based on the uploaded image and title. The item appears to be in excellent condition with authentic branding and classic styling.');
+    try {
+      const response = await fetch('http://127.0.0.1:5000/generate-description', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          condition,
+          size,
+          category,
+          brand,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setDescription(data.description);
+        // Clear the description error
+        setErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors.description;
+          return newErrors;
+        });
+      } else {
+        console.error('Failed to generate description:', response.statusText);
+        alert('Failed to generate description. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error generating description:', error);
+      alert('An error occurred while generating description.');
+    } finally {
       setIsLoading(false);
-    }, 2000);
+    }
   };
 
   const suggestPrice = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setPrice('79.99');
-      setIsLoading(false);
-    }, 1500);
+    // Generate random price between 60 and 80
+    const randomPrice = (Math.random() * (80 - 60) + 60).toFixed(2);
+    setPrice(randomPrice);
+  };
+
+  const validateForm = (): boolean => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (!selectedImage) newErrors.image = 'Product image is required';
+    if (!title.trim()) newErrors.title = 'Title is required';
+    if (!description.trim() || description.trim().length < 20) newErrors.description = 'Description must be at least 20 characters';
+    if (!category) newErrors.category = 'Category is required';
+    if (!price || parseFloat(price) <= 0) newErrors.price = 'Valid price is required';
+    if (!condition) newErrors.condition = 'Condition is required';
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate form before submitting
+    if (!validateForm()) {
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -224,6 +272,7 @@ export default function UploadPage() {
           {/* Image Upload */}
           <div>
             <label className={labelClass}>Product Images <span className="text-red-400">*</span></label>
+            {errors.image && <p className="text-red-500 text-xs mb-2">{errors.image}</p>}
             <div className="grid grid-cols-2 gap-4">
               {/* Upload zone */}
               <label htmlFor="image-upload" className="relative border border-dashed border-zinc-300 bg-white/60 hover:border-zinc-500 hover:bg-white/80 transition-all duration-200 cursor-pointer group aspect-square flex items-center justify-center">
@@ -255,38 +304,13 @@ export default function UploadPage() {
           {/* Title */}
           <div>
             <Label className={labelClass} htmlFor="title">Title <span className="text-red-400">*</span></Label>
+            {errors.title && <p className="text-red-500 text-xs mb-2">{errors.title}</p>}
             <Input
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className={inputClass}
               placeholder="e.g., Vintage Levi's Denim Jacket"
-              required
-            />
-          </div>
-
-          {/* Description */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <Label className={labelClass} htmlFor="description">Description <span className="text-red-400">*</span></Label>
-              <button
-                type="button"
-                onClick={generateDescription}
-                disabled={isLoading}
-                className="flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase text-zinc-600 hover:text-zinc-900 disabled:opacity-40 transition-colors"
-              >
-                <Sparkles className="h-3 w-3" />
-                {isLoading ? 'Generating…' : 'AI Generate'}
-              </button>
-            </div>
-            <textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={4}
-              className="w-full border border-zinc-200 bg-white rounded-sm px-3 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-900 transition-colors resize-none"
-              placeholder="Describe your item in detail…"
-              required
             />
           </div>
 
@@ -294,7 +318,8 @@ export default function UploadPage() {
           <div className="grid grid-cols-2 gap-6">
             <div>
               <Label className={labelClass} htmlFor="category">Category <span className="text-red-400">*</span></Label>
-              <select id="category" value={category} onChange={(e) => setCategory(e.target.value)} className={selectClass} required>
+              {errors.category && <p className="text-red-500 text-xs mb-2">{errors.category}</p>}
+              <select id="category" value={category} onChange={(e) => setCategory(e.target.value)} className={selectClass}>
                 <option value="">Select category</option>
                 {categories.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
               </select>
@@ -305,13 +330,12 @@ export default function UploadPage() {
                 <button
                   type="button"
                   onClick={suggestPrice}
-                  disabled={isLoading}
-                  className="flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase text-zinc-800 hover:text-zinc-900 disabled:opacity-40 transition-colors"
+                  className="flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase text-zinc-800 hover:text-zinc-900 transition-colors"
                 >
-                  <Sparkles className="h-3 w-3" />
-                  {isLoading ? 'Suggesting…' : 'AI Suggest'}
+                  Suggest
                 </button>
               </div>
+              {errors.price && <p className="text-red-500 text-xs mb-2">{errors.price}</p>}
               <Input
                 type="number"
                 id="price"
@@ -321,7 +345,6 @@ export default function UploadPage() {
                 min="0"
                 className={inputClass}
                 placeholder="79.99"
-                required
               />
             </div>
           </div>
@@ -340,7 +363,8 @@ export default function UploadPage() {
             </div>
             <div>
               <Label className={labelClass} htmlFor="condition">Condition <span className="text-red-400">*</span></Label>
-              <select id="condition" value={condition} onChange={(e) => setCondition(e.target.value)} className={selectClass} required>
+              {errors.condition && <p className="text-red-500 text-xs mb-2">{errors.condition}</p>}
+              <select id="condition" value={condition} onChange={(e) => setCondition(e.target.value)} className={selectClass}>
                 <option value="">Select condition</option>
                 {conditions.map((cond) => <option key={cond} value={cond}>{cond}</option>)}
               </select>
@@ -400,6 +424,31 @@ export default function UploadPage() {
                 {currentSizes.map((s: string) => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
+          </div>
+
+          {/* Description */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <Label className={labelClass} htmlFor="description">Description <span className="text-red-400">*</span></Label>
+              <button
+                type="button"
+                onClick={generateDescription}
+                disabled={isLoading}
+                className="flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase text-zinc-600 hover:text-zinc-900 disabled:opacity-40 transition-colors"
+              >
+                <Sparkles className="h-3 w-3" />
+                {isLoading ? 'Generating…' : 'AI Generate'}
+              </button>
+            </div>
+            {errors.description && <p className="text-red-500 text-xs mb-2">{errors.description}</p>}
+            <textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={4}
+              className="w-full border border-zinc-200 bg-white rounded-sm px-3 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-900 transition-colors resize-none"
+              placeholder="Describe your item in detail…"
+            />
           </div>
 
           {/* Submit */}

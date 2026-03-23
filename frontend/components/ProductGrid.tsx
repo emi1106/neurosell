@@ -21,7 +21,7 @@ export default function ProductGrid() {
     const qLower = query.toLowerCase();
     filteredProducts = filteredProducts.filter(p => 
       p.name.toLowerCase().includes(qLower) || 
-      p.description.toLowerCase().includes(qLower)
+      (p.description && p.description.toLowerCase().includes(qLower))
     );
   }
 
@@ -29,10 +29,10 @@ export default function ProductGrid() {
     filteredProducts = filteredProducts.filter(p => p.category === category);
   }
   if (size && size !== "all") {
-    filteredProducts = filteredProducts.filter(p => p.size.toLowerCase() === size.toLowerCase());
+    filteredProducts = filteredProducts.filter(p => p.size && p.size.toLowerCase() === size.toLowerCase());
   }
   if (color && color !== "all") {
-    filteredProducts = filteredProducts.filter(p => p.color.toLowerCase() === color.toLowerCase());
+    filteredProducts = filteredProducts.filter(p => p.color && p.color.toLowerCase() === color.toLowerCase());
   }
   if (priceRange && priceRange !== "all") {
     filteredProducts = filteredProducts.filter(p => {
@@ -55,11 +55,12 @@ export default function ProductGrid() {
     return 0;
   });
 
+  const showFeatured = filteredProducts.length > 1;
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12 py-8 min-h-[400px]">
       {filteredProducts.length > 0 ? (
         filteredProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard key={product.id} product={product} showFeatured={showFeatured} />
         ))
       ) : (
         <div className="col-span-full flex flex-col items-center justify-center py-20 text-zinc-400">
