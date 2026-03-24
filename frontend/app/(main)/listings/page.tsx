@@ -301,21 +301,19 @@ export default function UploadPage() {
             </div>
           </div>
 
-          {/* Title */}
-          <div>
-            <Label className={labelClass} htmlFor="title">Title <span className="text-red-400">*</span></Label>
-            {errors.title && <p className="text-red-500 text-xs mb-2">{errors.title}</p>}
-            <Input
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className={inputClass}
-              placeholder="e.g., Vintage Levi's Denim Jacket"
-            />
-          </div>
-
-          {/* Category and Price */}
+          {/* Title and Category */}
           <div className="grid grid-cols-2 gap-6">
+            <div>
+              <Label className={labelClass} htmlFor="title">Title <span className="text-red-400">*</span></Label>
+              {errors.title && <p className="text-red-500 text-xs mb-2">{errors.title}</p>}
+              <Input
+                id="title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className={inputClass}
+                placeholder="e.g., Vintage Levi's Denim Jacket"
+              />
+            </div>
             <div>
               <Label className={labelClass} htmlFor="category">Category <span className="text-red-400">*</span></Label>
               {errors.category && <p className="text-red-500 text-xs mb-2">{errors.category}</p>}
@@ -324,33 +322,10 @@ export default function UploadPage() {
                 {categories.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
               </select>
             </div>
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <Label className={labelClass} htmlFor="price">Price (€) <span className="text-red-400">*</span></Label>
-                <button
-                  type="button"
-                  onClick={suggestPrice}
-                  className="flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase text-zinc-800 hover:text-zinc-900 transition-colors"
-                >
-                  Suggest
-                </button>
-              </div>
-              {errors.price && <p className="text-red-500 text-xs mb-2">{errors.price}</p>}
-              <Input
-                type="number"
-                id="price"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                step="0.01"
-                min="0"
-                className={inputClass}
-                placeholder="79.99"
-              />
-            </div>
           </div>
 
-          {/* Brand and Condition */}
-          <div className="grid grid-cols-2 gap-6">
+          {/* Brand, Condition, Size */}
+          <div className="grid grid-cols-3 gap-6">
             <div>
               <Label className={labelClass} htmlFor="brand">Brand</Label>
               <Input
@@ -368,46 +343,6 @@ export default function UploadPage() {
                 <option value="">Select condition</option>
                 {conditions.map((cond) => <option key={cond} value={cond}>{cond}</option>)}
               </select>
-            </div>
-          </div>
-
-          {/* Material, Color, Size */}
-          <div className="grid grid-cols-3 gap-6">
-            <div>
-              <Label className={labelClass} htmlFor="material">Material</Label>
-              <Input
-                id="material"
-                value={material}
-                onChange={(e) => setMaterial(e.target.value)}
-                className={inputClass}
-                placeholder="e.g., 100% Cotton"
-              />
-            </div>
-            <div>
-              <Label className={labelClass} htmlFor="color">Color</Label>
-              <div className="relative">
-                <select
-                  id="color"
-                  value={color}
-                  onChange={(e) => setColor(e.target.value)}
-                  className={selectClass}
-                >
-                  <option value="">Select color</option>
-                  {clothingColors.map((colorOption) => (
-                    <option key={colorOption.hex} value={colorOption.name}>
-                      {colorOption.name}
-                    </option>
-                  ))}
-                </select>
-                {color && (
-                  <div
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6 border border-zinc-300 rounded pointer-events-none"
-                    style={{
-                      backgroundColor: clothingColors.find((c) => c.name === color)?.hex || '#000000',
-                    }}
-                  />
-                )}
-              </div>
             </div>
             <div>
               <Label className={labelClass} htmlFor="size">Size</Label>
@@ -449,6 +384,73 @@ export default function UploadPage() {
               className="w-full border border-zinc-200 bg-white rounded-sm px-3 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-900 transition-colors resize-none"
               placeholder="Describe your item in detail…"
             />
+          </div>
+
+          {/* Material, Color, Price */}
+          <div className="grid grid-cols-3 gap-6">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <Label className={labelClass} htmlFor="material">Material</Label>
+              </div>
+              <Input
+                id="material"
+                value={material}
+                onChange={(e) => setMaterial(e.target.value)}
+                className={inputClass}
+                placeholder="e.g., 100% Cotton"
+              />
+            </div>
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <Label className={labelClass} htmlFor="color">Color</Label>
+              </div>
+              <div className="relative">
+                <select
+                  id="color"
+                  value={color}
+                  onChange={(e) => setColor(e.target.value)}
+                  className={selectClass}
+                >
+                  <option value="">Select color</option>
+                  {clothingColors.map((colorOption) => (
+                    <option key={colorOption.hex} value={colorOption.name}>
+                      {colorOption.name}
+                    </option>
+                  ))}
+                </select>
+                {color && (
+                  <div
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6 border border-zinc-300 rounded pointer-events-none"
+                    style={{
+                      backgroundColor: clothingColors.find((c) => c.name === color)?.hex || '#000000',
+                    }}
+                  />
+                )}
+              </div>
+            </div>
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <Label className={labelClass} htmlFor="price">Price (€) <span className="text-red-400">*</span></Label>
+                <button
+                  type="button"
+                  onClick={suggestPrice}
+                  className="flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase text-zinc-800 hover:text-zinc-900 transition-colors"
+                >
+                  Suggest
+                </button>
+              </div>
+              {errors.price && <p className="text-red-500 text-xs mb-2">{errors.price}</p>}
+              <Input
+                type="number"
+                id="price"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                step="0.01"
+                min="0"
+                className={inputClass}
+                placeholder="79.99"
+              />
+            </div>
           </div>
 
           {/* Submit */}
