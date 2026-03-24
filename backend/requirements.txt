@@ -2,6 +2,7 @@ tensorflow
 numpy
 pandas
 torch
-flask
+flas
 flask_cors
 openai
+scikit-learn
